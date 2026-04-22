@@ -13,6 +13,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -100,6 +101,10 @@ Route::middleware(['auth', 'role:pemilik'])->prefix('pemilik')->name('pemilik.')
 
     // ... dalam grup middleware pemilik ...
     Route::resource('tenants', TenantController::class);
+
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::patch('payments/{bill}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
+    Route::patch('payments/{bill}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
     
 });
 
