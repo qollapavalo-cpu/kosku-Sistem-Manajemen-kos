@@ -14,6 +14,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -105,6 +106,9 @@ Route::middleware(['auth', 'role:pemilik'])->prefix('pemilik')->name('pemilik.')
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::patch('payments/{bill}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::patch('payments/{bill}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
     
 });
 

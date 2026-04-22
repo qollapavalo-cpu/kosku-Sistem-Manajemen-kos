@@ -35,6 +35,9 @@
                         <x-nav-link :href="route('pemilik.payments.index')" :active="request()->routeIs('pemilik.payments.*')">
                          {{ __('Konfirmasi Bayar') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('pemilik.reports.index')" :active="request()->routeIs('pemilik.reports.*')">
+                            {{ __('Laporan') }}
+                        </x-nav-link>
 
                     @elseif(auth()->user()->role === 'penyewa')
                         <x-nav-link :href="route('penyewa.dashboard')" :active="request()->routeIs('penyewa.dashboard.*')">
