@@ -43,6 +43,9 @@
                         <x-nav-link :href="route('penyewa.dashboard')" :active="request()->routeIs('penyewa.dashboard.*')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('penyewa.bills.index')" :active="request()->routeIs('penyewa.bills.*')">
+                            {{ __('Tagihan Saya') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>

@@ -15,6 +15,7 @@ use App\Http\Controllers\ContractController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TenantBillController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -118,6 +119,9 @@ Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')
     Route::get('/dashboard', function () {
         return view('penyewa.dashboard'); 
     })->name('dashboard');
+
+    // Tambahkan route tagihan penyewa di sini 👇
+    Route::get('/bills', [TenantBillController::class, 'index'])->name('bills.index');
 
     
     
