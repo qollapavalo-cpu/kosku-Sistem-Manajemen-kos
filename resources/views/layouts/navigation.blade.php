@@ -12,27 +12,33 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('pemilik.dashboard') || request()->routeIs('penyewa.dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+
+                    @if(auth()->user()->role === 'pemilik')
+                        <x-nav-link :href="route('pemilik.dashboard')" :active="request()->routeIs('pemilik.dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('pemilik.room-types.index')" :active="request()->routeIs('pemilik.room-types.*')">
+                            {{ __('Tipe Kamar') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('pemilik.rooms.index')" :active="request()->routeIs('pemilik.rooms.*')">
+                            {{ __('Kamar') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('pemilik.tenants.index')" :active="request()->routeIs('pemilik.tenants.*')">
+                            {{ __('Penyewa') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('pemilik.contracts.index')" :active="request()->routeIs('pemilik.contracts.*')">
+                            {{ __('Kontrak') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('pemilik.bills.index')" :active="request()->routeIs('pemilik.bills.*')">
+                            {{ __('Tagihan') }}
+                        </x-nav-link>
+
+                    @elseif(auth()->user()->role === 'penyewa')
+                        <x-nav-link :href="route('penyewa.dashboard')" :active="request()->routeIs('penyewa.dashboard.*')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endif
                 </div>
-
-                @if(auth()->user()->role === 'pemilik')
-                    <x-nav-link :href="route('pemilik.dashboard')" :active="request()->routeIs('pemilik.dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('pemilik.room-types.index')" :active="request()->routeIs('pemilik.room-types.*')">
-                        {{ __('Tipe Kamar') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('pemilik.rooms.index')" :active="request()->routeIs('pemilik.rooms.*')">
-                        {{ __('Kamar') }}
-                    </x-nav-link>
-
-                @elseif(auth()->user()->role === 'penyewa')
-                    <x-nav-link :href="route('penyewa.dashboard')" :active="request()->requestIs('penyewa/dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                @endif
             </div>
 
             <!-- Settings Dropdown -->

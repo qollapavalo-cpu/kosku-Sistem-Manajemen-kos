@@ -10,6 +10,9 @@ use App\Models\RoomType;
 use App\Models\Tenant;
 
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\TenantController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\BillController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,16 +92,26 @@ Route::middleware(['auth', 'role:pemilik'])->prefix('pemilik')->name('pemilik.')
     
     // Tambahkan route Kelola Kamar di sini
     Route::resource('rooms', RoomController::class);
+
+    Route::resource('contracts', ContractController::class);
+
+    Route::get('bills', [BillController::class, 'index'])->name('bills.index');
+    Route::post('bills/generate', [BillController::class, 'generate'])->name('bills.generate');
+
+    // ... dalam grup middleware pemilik ...
+    Route::resource('tenants', TenantController::class);
     
 });
 
 // GRUP ROUTE UNTUK PENYEWA
 Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')->group(function () {
-    /*
+    
     Route::get('/dashboard', function () {
         return view('penyewa.dashboard'); 
     })->name('dashboard');
-    */
+
+    
+    
     
 });
 
