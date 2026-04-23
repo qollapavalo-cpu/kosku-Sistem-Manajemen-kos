@@ -1,58 +1,70 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏢 Kosku - Sistem Manajemen Kos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+`Kosku` adalah aplikasi manajemen kos berbasis web untuk membantu pemilik kos dalam mengelola kamar, tipe kamar, penyewa, kontrak, tagihan, pembayaran, dan laporan keuangan. Aplikasi ini juga menyediakan *dashboard* khusus bagi penyewa untuk memantau tagihan dan mengunggah bukti pembayaran secara mandiri.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sistem ini memiliki 2 *role* utama dengan alur kerja masing-masing:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Dashboard Pemilik (Admin)
+- **Manajemen Aset:** Kelola Tipe Kamar (harga, fasilitas) dan Data Kamar.
+- **Manajemen Penghuni:** Pendaftaran data penyewa otomatis dengan pembuatan akun login.
+- **Kontrak Sewa:** Pembuatan kontrak sewa untuk menghubungkan penyewa dan kamar.
+- **Otomatisasi Tagihan:** *Generate* tagihan bulanan otomatis untuk semua kontrak aktif dengan jatuh tempo 7 hari.
+- **Validasi Pembayaran:** Konfirmasi atau tolak bukti transfer yang diunggah penyewa.
+- **Laporan Keuangan:** *Export* data pendapatan berdasar rentang waktu ke format CSV/Excel.
 
-## Learning Laravel
+### Dashboard Penyewa (User)
+- **Ringkasan Tagihan:** Pantau total tagihan aktif dan tanggal jatuh tempo.
+- **Upload Pembayaran:** Unggah foto/screenshot bukti transfer pembayaran (*jpg, jpeg, png*).
+- **Riwayat:** Melihat status tagihan (Belum Bayar, Menunggu Konfirmasi, Lunas).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Teknologi yang Digunakan
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Aplikasi ini dibangun menggunakan *tech stack* modern:
+- **Framework:** Laravel 13
+- **Bahasa:** PHP 8.3+
+- **Autentikasi:** Laravel Breeze
+- **Styling UI:** Tailwind CSS (Custom Theme: Merah, Putih, Abu-abu + *Glass effect*)
+- **Asset Bundler:** Vite
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Screenshots
+
+*(Catatan: Simpan gambar screenshot di folder repo, lalu sesuaikan nama file di bawah ini)*
+
+| Dashboard Pemilik | Dashboard Penyewa |
+| :---: | :---: |
+| ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/Screenshot%202026-04-23%20192646.png?raw=true)| ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/penyewa.png?raw=true) |
+
+| Kelola Tipe Kamar | Kelola Kamar |
+| :---: | :---: |
+| ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/tipe%20kamar.png?raw=true) | ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/kamar.png?raw=true) |
+
+| Generate Tagihan | Laporan Keuangan |
+| :---: | :---: |
+| ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/tagihan.png?raw=true) | ![alt text](https://github.com/qollapavalo-cpu/kosku-Sistem-Manajemen-kos/blob/main/public/images/laporan.png?raw=true) |
+
+---
+
+## ⚙️ Panduan Instalasi (Local Development)
+
+Jalankan perintah berikut secara berurutan di terminal Anda untuk memasang dan menjalankan proyek ini di komputer lokal:
 
 ```bash
-composer require laravel/boost --dev
+# Clone repository dan masuk ke folder aplikasi
+git clone <repository-url>
+cd kosku-sistem-manajemen-kos
 
-php artisan boost:install
-```
+# Install semua dependency PHP dan Node.js
+composer install
+npm install
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Setup environment variabel
+copy .env.example .env      # Catatan: Gunakan 'cp .env.example .env' jika di Linux/Mac
+php artisan key:generate
