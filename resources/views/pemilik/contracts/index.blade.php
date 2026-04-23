@@ -44,7 +44,10 @@
                                 @endif
                             </td>
                             <td class="border p-2 text-center">
-                                <a href="{{ route('pemilik.contracts.show', $contract->id) }}" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded text-xs">Detail</a>
+                                <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemilik.contracts.show', $contract->id) }}" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded text-xs">Detail</a>
+                                    <a href="{{ route('pemilik.contracts.edit', $contract->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs">Edit</a>
+                                </div>
                             </td>
                         </tr>
                         @empty

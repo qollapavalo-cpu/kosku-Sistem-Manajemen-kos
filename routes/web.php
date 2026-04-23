@@ -16,6 +16,7 @@ use App\Http\Controllers\BillController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TenantBillController;
+use App\Http\Controllers\TenantPaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -100,11 +101,15 @@ Route::middleware(['auth', 'role:pemilik'])->prefix('pemilik')->name('pemilik.')
 
     Route::get('bills', [BillController::class, 'index'])->name('bills.index');
     Route::post('bills/generate', [BillController::class, 'generate'])->name('bills.generate');
+    Route::get('bills/{bill}/edit', [BillController::class, 'edit'])->name('bills.edit');
+    Route::put('bills/{bill}', [BillController::class, 'update'])->name('bills.update');
 
     // ... dalam grup middleware pemilik ...
     Route::resource('tenants', TenantController::class);
 
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments/{bill}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+    Route::put('payments/{bill}', [PaymentController::class, 'update'])->name('payments.update');
     Route::patch('payments/{bill}/approve', [PaymentController::class, 'approve'])->name('payments.approve');
     Route::patch('payments/{bill}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
 
@@ -122,6 +127,8 @@ Route::middleware(['auth', 'role:penyewa'])->prefix('penyewa')->name('penyewa.')
 
     // Tambahkan route tagihan penyewa di sini 👇
     Route::get('/bills', [TenantBillController::class, 'index'])->name('bills.index');
+    Route::get('/payments/{bill}/create', [TenantPaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments/{bill}', [TenantPaymentController::class, 'store'])->name('payments.store');
 
     
     

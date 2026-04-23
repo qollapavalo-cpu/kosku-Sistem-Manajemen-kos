@@ -35,7 +35,7 @@
                                 <tr>
                                     <td class="border border-gray-300 px-4 py-2 font-semibold">{{ $bill->contract->tenant->user->name }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $bill->contract->room->room_number }}</td>
-                                    <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($bill->created_at)->format('F Y') }}</td>
+                                    <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::createFromDate($bill->period_year, $bill->period_month, 1)->translatedFormat('F Y') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-right font-bold">Rp {{ number_format($bill->amount + $bill->fine, 0, ',', '.') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-center">
                                         @if($bill->proof_of_payment)
@@ -61,6 +61,10 @@
                                                     Tolak
                                                 </button>
                                             </form>
+
+                                            <a href="{{ route('pemilik.payments.edit', $bill->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-xs">
+                                                Edit
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

@@ -1,6 +1,8 @@
 <x-guest-layout>
-    <div class="flex justify-center mb-6">
-        <h2 class="text-3xl font-bold text-blue-600">Sistem Manajemen Kosku</h2>
+    <div class="mb-8 text-center">
+        <p class="text-xs font-bold uppercase tracking-[0.35em] text-red-700">Kosku</p>
+        <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900">Masuk ke Sistem Manajemen Kos</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-500">Kelola kamar, tagihan, dan pembayaran dalam satu dashboard dengan tema baru yang lebih rapi.</p>
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -27,14 +29,14 @@
 
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="rounded border-slate-300 text-red-600 shadow-sm focus:ring-red-300" name="remember">
+                <span class="ms-2 text-sm text-slate-600">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
+                <a class="rounded-md text-sm font-medium text-slate-500 underline underline-offset-4 transition hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif

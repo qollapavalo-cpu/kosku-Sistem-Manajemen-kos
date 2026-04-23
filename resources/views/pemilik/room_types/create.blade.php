@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <form action="{{ route('pemilik.room-types.store') }}" method="POST">
+                    <form action="{{ route('pemilik.room-types.store') }}" method="POST" id="room-type-form">
                         @csrf
 
                         <div class="mb-4">
@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="flex items-center justify-between mt-6">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+                            <button type="submit" id="submit-room-type" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
                                 Simpan Data
                             </button>
                             <a href="{{ route('pemilik.room-types.index') }}" class="inline-block align-baseline font-bold text-sm text-gray-500 hover:text-gray-800">
@@ -71,4 +71,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('room-type-form');
+            const submitButton = document.getElementById('submit-room-type');
+
+            if (!form || !submitButton) {
+                return;
+            }
+
+            form.addEventListener('submit', function () {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Menyimpan...';
+                submitButton.classList.add('opacity-75', 'cursor-not-allowed');
+            });
+        });
+    </script>
 </x-app-layout>

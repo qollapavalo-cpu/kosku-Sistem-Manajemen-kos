@@ -8,7 +8,7 @@ class Bill extends Model
 {
     protected $fillable = [
         'contract_id', 'period_month', 'period_year', 
-        'amount', 'fine', 'due_date', 'status'
+        'amount', 'fine', 'due_date', 'status', 'proof_of_payment'
     ];
 
     public function contract()

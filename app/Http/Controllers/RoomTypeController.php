@@ -7,76 +7,82 @@ use Illuminate\Http\Request;
 
 class RoomTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Mengambil semua data tipe kamar dari database
         $roomTypes = RoomType::all();
-        // Melempar data ke tampilan view
         return view('pemilik.room_types.index', compact('roomTypes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        // Menampilkan form tambah data
         return view('pemilik.room_types.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validasi data yang dikirim dari form
         $request->validate([
-            'name' => 'required|string|max:50',
+            'name' => 'required|string|max:50|unique:room_types,name',
             'description' => 'nullable|string',
             'facilities' => 'nullable|string',
             'monthly_price' => 'required|numeric|min:0',
         ]);
 
-        // Simpan ke database
-        RoomType::create($request->all());
+        RoomType::create($request->only([
+            'name',
+            'description',
+            'facilities',
+            'monthly_price',
+        ]));
 
-        // Kembalikan ke halaman daftar dengan pesan sukses
         return redirect()->route('pemilik.room-types.index')
                          ->with('success', 'Tipe kamar berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        abort(404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        $roomType = RoomType::findOrFail($id);
+        return view('pemilik.room_types.edit', compact('roomType'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $roomType = RoomType::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:50|unique:room_types,name,' . $roomType->id,
+            'description' => 'nullable|string',
+            'facilities' => 'nullable|string',
+            'monthly_price' => 'required|numeric|min:0',
+        ]);
+
+        $roomType->update($request->only([
+            'name',
+            'description',
+            'facilities',
+            'monthly_price',
+        ]));
+
+        return redirect()->route('pemilik.room-types.index')
+                         ->with('success', 'Tipe kamar berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $roomType = RoomType::withCount('rooms')->findOrFail($id);
+
+        if ($roomType->rooms_count > 0) {
+            return redirect()->route('pemilik.room-types.index')
+                ->with('error', 'Tipe kamar tidak bisa dihapus karena masih dipakai oleh data kamar.');
+        }
+
+        $roomType->delete();
+
+        return redirect()->route('pemilik.room-types.index')
+            ->with('success', 'Tipe kamar berhasil dihapus!');
     }
 }

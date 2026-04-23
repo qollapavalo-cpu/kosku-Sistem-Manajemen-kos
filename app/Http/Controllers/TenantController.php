@@ -27,42 +27,45 @@ class TenantController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'nik' => 'required|string|max:20|unique:tenants',
+            'password' => 'required|string|min:8|confirmed',
+            'nik' => 'required|string|max:20|unique:tenants,nik',
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
-            'ktp_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'ktp_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        $ktpPhotoPath = null;
 
         try {
             DB::beginTransaction();
+
+            $ktpPhotoPath = $request->file('ktp_photo')?->store('ktp-photos', 'public');
 
             // 1. Buat User Account
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make('penyewa123'), // Password default
+                'password' => Hash::make($request->password),
                 'role' => 'penyewa',
+                'email_verified_at' => now(),
             ]);
 
-            // 2. Handle Upload KTP
-            $ktpPath = null;
-            if ($request->hasFile('ktp_photo')) {
-                $ktpPath = $request->file('ktp_photo')->store('ktp_photos', 'public');
-            }
-
-            // 3. Buat Profil Tenant
+            // 2. Buat Profil Tenant
             Tenant::create([
                 'user_id' => $user->id,
                 'nik' => $request->nik,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'ktp_photo' => $ktpPath,
+                'ktp_photo' => $ktpPhotoPath,
             ]);
 
             DB::commit();
-            return redirect()->route('pemilik.tenants.index')->with('success', 'Penyewa dan akun berhasil dibuat! Password default: penyewa123');
+            return redirect()->route('pemilik.tenants.index')->with('success', 'Penyewa dan akun login berhasil dibuat. Akun penyewa langsung terkonfirmasi dan bisa login memakai email serta password yang baru dibuat.');
         } catch (\Exception $e) {
             DB::rollBack();
+            if (!empty($ktpPhotoPath)) {
+                Storage::disk('public')->delete($ktpPhotoPath);
+            }
             return back()->withInput()->with('error', 'Gagal menambahkan penyewa: ' . $e->getMessage());
         }
     }
@@ -76,9 +79,10 @@ class TenantController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
             'nik' => 'required|string|max:20|unique:tenants,nik,' . $tenant->id,
-            'ktp_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'phone' => 'required|string|max:20',
+            'address' => 'nullable|string',
+            'ktp_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         try {
@@ -90,10 +94,13 @@ class TenantController extends Controller
             $data = $request->only(['nik', 'phone', 'address']);
 
             if ($request->hasFile('ktp_photo')) {
+                $newKtpPhotoPath = $request->file('ktp_photo')->store('ktp-photos', 'public');
+
                 if ($tenant->ktp_photo) {
                     Storage::disk('public')->delete($tenant->ktp_photo);
                 }
-                $data['ktp_photo'] = $request->file('ktp_photo')->store('ktp_photos', 'public');
+
+                $data['ktp_photo'] = $newKtpPhotoPath;
             }
 
             $tenant->update($data);
@@ -116,4 +123,5 @@ class TenantController extends Controller
         $tenant->user->delete(); 
         return redirect()->route('pemilik.tenants.index')->with('success', 'Penyewa berhasil dihapus.');
     }
+
 }

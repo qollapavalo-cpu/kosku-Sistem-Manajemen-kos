@@ -12,6 +12,11 @@
                     {{ session('success') }}
                 </div>
             @endif
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -29,16 +34,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($roomTypes as $type)
+                            @forelse($roomTypes as $type)
                                 <tr>
                                     <td class="border border-gray-300 px-4 py-2">{{ $type->name }}</td>
                                     <td class="border border-gray-300 px-4 py-2">{{ $type->facilities }}</td>
                                     <td class="border border-gray-300 px-4 py-2">Rp {{ number_format($type->monthly_price, 0, ',', '.') }}</td>
                                     <td class="border border-gray-300 px-4 py-2 text-center">
-                                        <span class="text-gray-400 italic">Belum dibuat</span>
+                                        <div class="flex items-center justify-center gap-3">
+                                            <a href="{{ route('pemilik.room-types.edit', $type->id) }}" class="text-blue-500 hover:text-blue-700 font-semibold">Edit</a>
+                                            <form action="{{ route('pemilik.room-types.destroy', $type->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tipe kamar ini?');" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-700 font-semibold">Hapus</button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="border border-gray-300 px-4 py-4 text-center text-gray-500">Belum ada tipe kamar.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

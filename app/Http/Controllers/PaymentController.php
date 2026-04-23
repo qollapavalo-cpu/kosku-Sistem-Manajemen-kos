@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
     public function index()
     {
-        // Hanya menampilkan tagihan yang sudah diupload bukti bayarnya oleh penyewa
         $pendingPayments = Bill::with(['contract.tenant.user', 'contract.room'])
                                 ->where('status', 'menunggu_konfirmasi')
                                 ->latest()
@@ -21,16 +20,12 @@ class PaymentController extends Controller
 
     public function approve(Bill $bill)
     {
-        // Pastikan tagihan memang dalam status menunggu konfirmasi
         if ($bill->status !== 'menunggu_konfirmasi') {
             return back()->with('error', 'Status tagihan ini tidak valid untuk dikonfirmasi.');
         }
 
-        // Update status tagihan menjadi lunas
         $bill->update([
             'status' => 'lunas',
-            // Jika di database ada kolom approved_by, kita catat ID pemilik yang login
-            // 'approved_by' => Auth::id(), 
         ]);
 
         return redirect()->route('pemilik.payments.index')->with('success', 'Pembayaran berhasil dikonfirmasi dan tagihan dinyatakan Lunas.');
@@ -38,12 +33,43 @@ class PaymentController extends Controller
 
     public function reject(Bill $bill)
     {
-        // Jika bukti transfer palsu atau tidak jelas, Admin bisa menolak
         $bill->update([
-            'status' => 'belum_dibayar',
+            'status' => 'belum_bayar',
             'proof_of_payment' => null // Opsional: hapus bukti yang salah agar penyewa upload ulang
         ]);
 
         return redirect()->route('pemilik.payments.index')->with('info', 'Pembayaran ditolak. Penyewa diminta untuk mengunggah ulang bukti pembayaran.');
+    }
+
+    public function edit(Bill $bill)
+    {
+        $bill->load(['contract.tenant.user', 'contract.room.roomType']);
+        return view('pemilik.payments.edit', compact('bill'));
+    }
+
+    public function update(Request $request, Bill $bill)
+    {
+        $request->validate([
+            'status' => 'required|in:belum_bayar,menunggu_konfirmasi,lunas',
+            'due_date' => 'required|date',
+            'amount' => 'required|numeric|min:0',
+            'fine' => 'required|numeric|min:0',
+            'clear_proof' => 'nullable|boolean',
+        ]);
+
+        $data = $request->only(['status', 'due_date', 'amount', 'fine']);
+
+        if ($request->boolean('clear_proof') && $bill->proof_of_payment) {
+            Storage::disk('public')->delete($bill->proof_of_payment);
+            $data['proof_of_payment'] = null;
+        }
+
+        if ($data['status'] === 'belum_bayar' && $bill->proof_of_payment && !array_key_exists('proof_of_payment', $data)) {
+            $data['proof_of_payment'] = $bill->proof_of_payment;
+        }
+
+        $bill->update($data);
+
+        return redirect()->route('pemilik.payments.index')->with('success', 'Konfirmasi pembayaran berhasil diperbarui!');
     }
 }

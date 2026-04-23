@@ -11,20 +11,16 @@ class BillController extends Controller
 {
     public function index()
     {
-        // 1. Logika Denda Otomatis (Auto-Calculate Fine)
-        // Mengecek tagihan yang belum lunas dan sudah lewat jatuh tempo hari ini
         $unpaidBills = Bill::where('status', '!=', 'lunas')
                             ->whereDate('due_date', '<', Carbon::now()->toDateString())
                             ->get();
 
         foreach ($unpaidBills as $bill) {
-            // Jika denda masih 0, tambahkan denda (misal: Rp 50.000 flat)
             if ($bill->fine == 0) {
                 $bill->update(['fine' => 50000]);
             }
         }
 
-        // 2. Ambil semua data tagihan terbaru beserta relasinya
         $bills = Bill::with(['contract.tenant.user', 'contract.room.roomType'])->latest()->get();
         
         return view('pemilik.bills.index', compact('bills'));
@@ -32,7 +28,6 @@ class BillController extends Controller
 
     public function generate()
     {
-        // Ambil semua kontrak yang masih "aktif"
         $activeContracts = Contract::where('status', 'aktif')->get();
         
         $currentMonth = Carbon::now()->month;
@@ -40,21 +35,20 @@ class BillController extends Controller
         $generatedCount = 0;
 
         foreach ($activeContracts as $contract) {
-            // Cek apakah tagihan untuk kontrak ini sudah pernah dibuat di bulan & tahun ini
             $existingBill = Bill::where('contract_id', $contract->id)
-                                ->whereMonth('created_at', $currentMonth)
-                                ->whereYear('created_at', $currentYear)
+                                ->where('period_month', $currentMonth)
+                                ->where('period_year', $currentYear)
                                 ->first();
 
-            // Jika belum ada tagihan bulan ini, buat baru
             if (!$existingBill) {
                 Bill::create([
                     'contract_id' => $contract->id,
+                    'period_month' => $currentMonth,
+                    'period_year' => $currentYear,
                     'amount' => $contract->monthly_price,
-                    // Jatuh tempo diset 7 hari dari tanggal generate
                     'due_date' => Carbon::now()->addDays(7)->toDateString(), 
                     'fine' => 0,
-                    'status' => 'belum_dibayar'
+                    'status' => 'belum_bayar'
                 ]);
                 $generatedCount++;
             }
@@ -65,5 +59,50 @@ class BillController extends Controller
         } else {
             return redirect()->route('pemilik.bills.index')->with('info', 'Semua tagihan untuk bulan ini sudah dibuat sebelumnya. Tidak ada duplikasi.');
         }
+    }
+
+    public function edit(Bill $bill)
+    {
+        $bill->load(['contract.tenant.user', 'contract.room.roomType']);
+        $contracts = Contract::with(['tenant.user', 'room.roomType'])->where('status', 'aktif')->get();
+
+        return view('pemilik.bills.edit', compact('bill', 'contracts'));
+    }
+
+    public function update(Request $request, Bill $bill)
+    {
+        $request->validate([
+            'contract_id' => 'required|exists:contracts,id',
+            'period_month' => 'required|integer|between:1,12',
+            'period_year' => 'required|integer|min:2000|max:2100',
+            'amount' => 'required|numeric|min:0',
+            'fine' => 'required|numeric|min:0',
+            'due_date' => 'required|date',
+            'status' => 'required|in:belum_bayar,menunggu_konfirmasi,lunas',
+        ]);
+
+        $exists = Bill::where('contract_id', $request->contract_id)
+            ->where('period_month', $request->period_month)
+            ->where('period_year', $request->period_year)
+            ->where('id', '!=', $bill->id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withInput()->withErrors([
+                'period_month' => 'Tagihan untuk kontrak dan periode ini sudah ada.',
+            ]);
+        }
+
+        $bill->update($request->only([
+            'contract_id',
+            'period_month',
+            'period_year',
+            'amount',
+            'fine',
+            'due_date',
+            'status',
+        ]));
+
+        return redirect()->route('pemilik.bills.index')->with('success', 'Tagihan berhasil diperbarui!');
     }
 }

@@ -11,6 +11,13 @@ class Contract extends Model
         'duration_month', 'monthly_price', 'status'
     ];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'duration_month' => 'integer',
+        'monthly_price' => 'decimal:2',
+    ];
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
